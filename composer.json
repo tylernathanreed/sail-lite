@@ -3,7 +3,8 @@
     "description": "Docker files for basic PHP package development",
     "keywords": [
         "sail",
-        "docker"
+        "docker",
+        "dev"
     ],
     "license": "MIT",
     "authors": [
