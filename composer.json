@@ -1,0 +1,21 @@
+{
+    "name": "reedware/sail-lite",
+    "description": "Docker files for basic PHP package development",
+    "keywords": [
+        "sail",
+        "docker"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tyler Reed",
+            "email": "tylernathanreed@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.3"
+    },
+    "bin": [
+        "bin/sail"
+    ]
+}

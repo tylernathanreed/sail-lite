@@ -1,0 +1,193 @@
+#!/usr/bin/env bash
+
+UNAMEOUT="$(uname -s)"
+
+# Verify operating system is supported...
+case "${UNAMEOUT}" in
+    Linux*)             MACHINE=linux;;
+    Darwin*)            MACHINE=mac;;
+    *)                  MACHINE="UNKNOWN"
+esac
+
+if [ "$MACHINE" == "UNKNOWN" ]; then
+    echo "Unsupported operating system [$(uname -s)]. Sail Lite supports macOS, Linux, and Windows (WSL2)." >&2
+
+    exit 1
+fi
+
+# Determine if stdout is a terminal...
+if test -t 1; then
+    # Determine if colors are supported...
+    ncolors=$(tput colors)
+
+    if test -n "$ncolors" && test "$ncolors" -ge 8; then
+        BOLD="$(tput bold)"
+        YELLOW="$(tput setaf 3)"
+        GREEN="$(tput setaf 2)"
+        NC="$(tput sgr0)"
+    fi
+fi
+
+# Function that prints the available commands...
+function display_help {
+    echo "Sail Lite"
+    echo
+    echo "${YELLOW}Usage:${NC}" >&2
+    echo "  sail COMMAND [options] [arguments]"
+    echo
+    echo "Unknown commands are passed to the docker-compose binary."
+    echo
+    echo "${YELLOW}Installation Commands:${NC}"
+    echo "  ${GREEN}sail install${NC}   Publish only the necessary files to run the development container"
+    echo "  ${GREEN}sail publish${NC}   Publish all runtimes for the development container"
+    echo
+    echo "${YELLOW}docker-compose Commands:${NC}"
+    echo "  ${GREEN}sail up${NC}        Start the development container"
+    echo "  ${GREEN}sail up -d${NC}     Start the development container in the background"
+    echo "  ${GREEN}sail stop${NC}      Stop the development container"
+    echo "  ${GREEN}sail down${NC}      Stop and remove development container"
+    echo "  ${GREEN}sail restart${NC}   Restart the development container"
+    echo "  ${GREEN}sail ps${NC}        Display the status of all containers"
+    echo
+    echo "${YELLOW}Container CLI:${NC}"
+    echo "  ${GREEN}sail shell${NC}        Start a shell session within the development container"
+    echo "  ${GREEN}sail bash${NC}         Alias for 'sail shell'"
+    echo "  ${GREEN}sail root-shell${NC}   Start a root shell session within the development container"
+    echo "  ${GREEN}sail root-bash${NC}    Alias for 'sail root-shell'"
+
+    exit 1
+}
+
+# Proxy the "help" command...
+if [ $# -gt 0 ]; then
+    if [ "$1" == "help" ] || [ "$1" == "-h" ] || [ "$1" == "-help" ] || [ "$1" == "--help" ]; then
+        display_help
+    fi
+else
+    display_help
+fi
+
+# Source the ".env" file so that environment variables are available...
+# shellcheck source=/dev/null
+if [ -n "$APP_ENV" ] && [ -f ./.env."$APP_ENV" ]; then
+  source ./.env."$APP_ENV";
+elif [ -f ./.env ]; then
+  source ./.env;
+fi
+
+# Define environment variables...
+export APP_SERVICE=${APP_SERVICE:-"dev"}
+export WWWUSER=${WWWUSER:-$UID}
+export WWWGROUP=${WWWGROUP:-$(id -g)}
+
+# Function that outputs Sail is not running...
+function sail_is_not_running {
+    echo "${BOLD}Sail is not running.${NC}" >&2
+    echo "" >&2
+    echo "${BOLD}You may Sail using the following commands:${NC} './vendor/bin/sail up' or './vendor/bin/sail up -d'" >&2
+
+    exit 1
+}
+
+# Define Docker Compose command prefix...
+if docker compose &> /dev/null; then
+    DOCKER_COMPOSE=(docker compose)
+else
+    DOCKER_COMPOSE=(docker-compose)
+fi
+
+EXEC="yes"
+
+if [ -z "$SAIL_SKIP_CHECKS" ]; then
+    # Ensure that Docker is running...
+    if ! docker info > /dev/null 2>&1; then
+        echo "${BOLD}Docker is not running.${NC}" >&2
+
+        exit 1
+    fi
+
+    # Determine if Sail is currently up...
+    if "${DOCKER_COMPOSE[@]}" ps "$APP_SERVICE" 2>&1 | grep 'Exit\|exited'; then
+        echo "${BOLD}Shutting down old Sail processes...${NC}" >&2
+
+        "${DOCKER_COMPOSE[@]}" down > /dev/null 2>&1
+
+        EXEC="no"
+    elif [ -z "$("${DOCKER_COMPOSE[@]}" ps -q)" ]; then
+        EXEC="no"
+    fi
+fi
+
+ARGS=()
+
+# Proxy docker-compose commands to the docker-compose binary on the application container...
+if [ "$1" == "docker-compose" ]; then
+    shift 1
+
+    if [ "$EXEC" == "yes" ]; then
+        ARGS+=(exec -u sail)
+        [ ! -t 0 ] && ARGS+=(-T)
+        ARGS+=("$APP_SERVICE" "${DOCKER_COMPOSE[@]}")
+    else
+        sail_is_not_running
+    fi
+
+# Initiate a Bash shell within the application container...
+elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
+    shift 1
+
+    if [ "$EXEC" == "yes" ]; then
+        ARGS+=(exec -u sail)
+        [ ! -t 0 ] && ARGS+=(-T)
+        ARGS+=("$APP_SERVICE" bash)
+    else
+        sail_is_not_running
+    fi
+
+# Initiate a root user Bash shell within the application container...
+elif [ "$1" == "root-shell" ] || [ "$1" == "root-bash" ]; then
+    shift 1
+
+    if [ "$EXEC" == "yes" ]; then
+        ARGS+=(exec -u root)
+        [ ! -t 0 ] && ARGS+=(-T)
+        ARGS+=("$APP_SERVICE" bash)
+    else
+        sail_is_not_running
+    fi
+
+# Install the necessary files to run the development container...
+elif [ "$1" == "install" ]; then
+    shift 1
+
+    # Default PHP version to 8.4 if not provided
+    PHP_VERSION="${1:-8.4}"
+
+    # Validate PHP version
+    if [[ "$PHP_VERSION" != "8.3" && "$PHP_VERSION" != "8.4" ]]; then
+        echo "${BOLD}Unsupported PHP version: $PHP_VERSION.${NC}" >&2
+        echo "Supported versions are: 8.3, 8.4" >&2
+        exit 1
+    fi
+
+    # Determine the script directory
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+    # Path to stub and destination
+    STUB_PATH="$SCRIPT_DIR/../stubs/docker-compose.stub"
+    DEST_PATH="./docker-compose.yml"
+
+    if [ ! -f "$STUB_PATH" ]; then
+        echo "${BOLD}Stub file not found at $STUB_PATH${NC}" >&2
+        exit 1
+    fi
+
+    # Replace {{PHP_VERSION}} and save to docker-compose.yml
+    sed "s/{{PHP_VERSION}}/$PHP_VERSION/g" "$STUB_PATH" > "$DEST_PATH"
+
+    echo "${GREEN}Docker Compose file generated successfully using PHP $PHP_VERSION!${NC}"
+    exit 0
+fi
+
+# Run Docker Compose with the defined arguments...
+"${DOCKER_COMPOSE[@]}" "${ARGS[@]}" "$@"
