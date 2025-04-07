@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [Sail Lite vs Docker Compose](#sail-lite-vs-docker-compose)
 - [Sail Lite vs Laravel Sail](#sail-lite-vs-laravel-sail)
 - [Installation and Setup](#installation-and-setup)
   - [Installing into Existing PHP Packages](#installing-into-existing-php-packages)
@@ -16,7 +17,7 @@
 ## Introduction
 <a name="introduction"></a>
 
-Sail Lite is a light-weight command-line interface for interacting a baseline Docker environment for package development.
+Sail Lite is a light-weight command-line interface for interacting a baseline [Docker](https://www.docker.com/) environment for package development.
 Sail Lite was inspired by [Laravel Sail](https://github.com/laravel/sail), which offers a richer experience for Laravel development.
 Sail Lite is intended to be a lighter-weight alternative to Laravel Sail, targeting package development, and isn't specific to Laravel development.
 
@@ -24,8 +25,21 @@ At its heart, Sail Lite is the `docker-compose.yml` file and the `sail` script t
 
 Sail Lite is supported on macOS, Linux, and Windows (via [WSL2](https://docs.microsoft.com/en-us/windows/wsl/about)).
 
+## Sail Lite vs Docker Compose
+<a name="sail-lite-vs-docker-compose"></a>
+
+Under the hood, Sail Lite is just [Docker](https://www.docker.com/).
+However, Sail Lite is pre-configured for PHP package development, and offers a `sail` binary with commands that are easier to work with.
+
+| Sail Lite    | Docker Compose                         |
+| ------------ | -------------------------------------- |
+| `sail up`    | `docker compose up`                    |
+| `sail down`  | `docker compose down`                  |
+| `sail build` | `docker compose build`                 |
+| `sail bash`  | `docker compose exec -u sail dev bash` |
+
 ## Sail Lite vs Laravel Sail
-<a name="introduction"></a>
+<a name="sail-lite-vs-laravel-sail"></a>
 
 Sail Lite is intended for PHP package development, where as Laravel Sail targets the general Laravel developer experience.
 
@@ -34,6 +48,10 @@ If you intend to build Laravel applications, you should use Laravel Sail.
 Sail Lite installs far fewer container dependencies than Laravel Sail (35 and counting), in that there's no database, cache, or node.js support.
 
 Laravel Sail also requires several Illuminate and Symfony libraries, whereas Sail Lite has no package dependencies.
+
+| Sail Lite                                      | Laravel Sail                                         |
+| ---------------------------------------------- | ---------------------------------------------------- |
+| ![Sail Lite Vendor](/img/sail-lite-vendor.png) | ![Laravel Sail Vendor](/img/laravel-sail-vendor.png) |
 
 ## Installation and Setup
 <a name="installation-and-setup"></a>
