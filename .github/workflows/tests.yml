@@ -49,7 +49,7 @@ jobs:
         working-directory: package
 
       - name: Install Sail into Package
-        run: php artisan sail:publish --no-interaction
+        run: sail:publish --no-interaction
         working-directory: package
 
       - name: Remove Sail
