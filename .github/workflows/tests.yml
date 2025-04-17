@@ -15,6 +15,9 @@ jobs:
       fail-fast: true
       matrix:
         include:
+          - php: '8.1'
+          - php: '8.2'
+          - php: '8.3'
           - php: '8.4'
 
     name: PHP ${{ matrix.php }}
@@ -36,7 +39,7 @@ jobs:
           coverage: none
 
       - name: Create a new PHP package
-        run: composer create-project reedware/laravel-relation-joins package --remove-vcs --no-interaction --prefer-dist
+        run: composer create-project reedware/package-skeleton-php package --remove-vcs --no-interaction --prefer-dist
 
       - name: Link Sail Repository
         run: |
