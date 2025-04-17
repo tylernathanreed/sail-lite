@@ -1,5 +1,9 @@
 # Sail Lite
 
+[![PHP](https://img.shields.io/badge/PHP-8.1+-blue)](https://www.php.net/)
+[![Latest Stable Version](https://img.shields.io/packagist/v/reedware/sail-lite)](https://packagist.org/packages/reedware/sail-lite)
+[![License](https://img.shields.io/packagist/l/reedware/sail-lite)](https://packagist.org/packages/reedware/sail-lite)
+
 ## Table of Contents
 
 - [Introduction](#introduction)
