@@ -60,6 +60,17 @@ jobs:
         run: ../sail/bin/sail up -d --wait
         working-directory: package
 
+      - name: Confirm PHP Version
+        run: |
+            output=$(../sail/bin/sail exec -T dev php -v | head -n 1)
+            echo "Detected PHP version: $output"
+
+            if [[ "$output" != PHP\ ${{ matrix.php }}* ]]; then
+                echo "PHP version mismatch: expected PHP ${{ matrix.php }}, got $output"
+                exit 1
+            fi
+        working-directory: package
+
       - name: Stop Sail Container
         run: ../sail/bin/sail down
         working-directory: package
