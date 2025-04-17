@@ -2,7 +2,7 @@ services:
     dev:
         build:
             context: ./vendor/reedware/sail-lite/runtimes/{{PHP_VERSION}}
-            dockerfile: Dockerfile
+            dockerfile: ./vendor/reedware/sail-lite/runtimes/{{PHP_VERSION}}/Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
         image: sail-{{PHP_VERSION}}/dev

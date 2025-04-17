@@ -211,13 +211,16 @@ elif [ "$1" == "publish" ]; then
     mkdir -p "$DEST_RUNTIME_DIR"
 
     # Copy runtime files to destination
-    cp "$STUB_RUNTIME_DIR"/* "$DEST_RUNTIME_DIR"/
+    cp -r "$STUB_RUNTIME_DIR"/* "$DEST_RUNTIME_DIR"/
 
     # Update references in docker-compose.yml
-    for runtime_file in "$STUB_RUNTIME_DIR"/*; do
-        filename=$(basename "$runtime_file")
-        # Replace original path (../stubs/runtimes/filename) with ./docker/filename
-        sed -i.bak "s|../stubs/runtimes/$filename|./docker/$filename|g" ./docker-compose.yml
+    for dir in "$STUB_RUNTIME_DIR"/*; do
+        php_version=$(basename "$dir")
+        dest="$DEST_RUNTIME_DIR/$php_version"
+        # Replace original path (../stubs/runtimes/php_version) with ./docker/php_version
+        sed -i.bak \
+            "s|./vendor/reedware/sail-lite/runtimes/$php_version|./docker/$php_version|g" \
+            ./docker-compose.yml
     done
 
     echo "${GREEN}All runtimes published to ./docker and docker-compose.yml updated.${NC}"

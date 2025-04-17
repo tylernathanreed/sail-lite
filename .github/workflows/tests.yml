@@ -49,6 +49,7 @@ jobs:
         run: |
             vendor/bin/sail install ${{ matrix.php }}
             vendor/bin/sail publish
+            cat docker-compose.yml
         working-directory: package
 
       - name: Remove Sail
