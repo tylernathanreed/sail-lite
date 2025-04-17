@@ -164,9 +164,9 @@ elif [ "$1" == "install" ]; then
     PHP_VERSION="${1:-8.4}"
 
     # Validate PHP version
-    if [[ "$PHP_VERSION" != "8.3" && "$PHP_VERSION" != "8.4" ]]; then
+    if [[ "$PHP_VERSION" != "8.1" && "$PHP_VERSION" != "8.2" && "$PHP_VERSION" != "8.3" && "$PHP_VERSION" != "8.4" ]]; then
         echo "${BOLD}Unsupported PHP version: $PHP_VERSION.${NC}" >&2
-        echo "Supported versions are: 8.3, 8.4" >&2
+        echo "Supported versions are: 8.1, 8.2, 8.3, 8.4" >&2
         exit 1
     fi
 
@@ -186,6 +186,41 @@ elif [ "$1" == "install" ]; then
     sed "s/{{PHP_VERSION}}/$PHP_VERSION/g" "$STUB_PATH" > "$DEST_PATH"
 
     echo "${GREEN}Docker Compose file generated successfully using PHP $PHP_VERSION!${NC}"
+    exit 0
+
+# Publish the runtimes into the development workspace
+elif [ "$1" == "publish" ]; then
+    # Determine directories
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    STUB_RUNTIME_DIR="$SCRIPT_DIR/../stubs/runtimes"
+    DEST_RUNTIME_DIR="./docker"
+
+    # Ensure docker-compose.yml exists
+    if [ ! -f ./docker-compose.yml ]; then
+        echo "${BOLD}docker-compose.yml not found. Please run './sail install' first.${NC}" >&2
+        exit 1
+    fi
+
+    # Ensure stub runtimes exist
+    if [ ! -d "$STUB_RUNTIME_DIR" ]; then
+        echo "${BOLD}Runtime stub directory not found at $STUB_RUNTIME_DIR${NC}" >&2
+        exit 1
+    fi
+
+    # Create the destination directory if it doesn't exist
+    mkdir -p "$DEST_RUNTIME_DIR"
+
+    # Copy runtime files to destination
+    cp "$STUB_RUNTIME_DIR"/* "$DEST_RUNTIME_DIR"/
+
+    # Update references in docker-compose.yml
+    for runtime_file in "$STUB_RUNTIME_DIR"/*; do
+        filename=$(basename "$runtime_file")
+        # Replace original path (../stubs/runtimes/filename) with ./docker/filename
+        sed -i.bak "s|../stubs/runtimes/$filename|./docker/$filename|g" ./docker-compose.yml
+    done
+
+    echo "${GREEN}All runtimes published to ./docker and docker-compose.yml updated.${NC}"
     exit 0
 fi
 
