@@ -147,11 +147,11 @@ sail root-shell
 ## PHP Versions
 <a name="php-versions"></a>
 
-Sail Lite supports PHP versions in [Active Support](https://www.php.net/supported-versions.php). When a new version of PHP is initially released or an existing version of PHP enters Security Support, a new major release of Sail Lite will be published. If you need to use older versions of PHP, then you will need to use older versions of Sail Lite.
+Sail Lite follows the [Supported PHP Versions](https://www.php.net/supported-versions.php), including versions only receiving Security Support. When a new version of PHP is released, a new major release of Sail Lite will be published, and any PHP versions that have reached End of Life will no longer be supported. If you need to use older versions of PHP, then you will need to use older versions of Sail Lite.
 
 | Sail Lite | PHP Versions |
 | --------- | ------------ |
-| 1.x       | 8.3 - 8.4    |
+| 1.x       | 8.1 - 8.4    |
 
 To change the PHP version that is used to serve your application, you should update the `build` definition of the `dev` container in your package's `docker-compose.yml` file:
 
@@ -161,6 +161,12 @@ context: ./vendor/reedware/sail-lite/runtimes/8.4
 
 # PHP 8.3
 context: ./vendor/reedware/sail-lite/runtimes/8.3
+
+# PHP 8.2
+context: ./vendor/reedware/sail-lite/runtimes/8.2
+
+# PHP 8.1
+context: ./vendor/reedware/sail-lite/runtimes/8.1
 ```
 
 In addition, you may wish to update your `image` name to reflect the version of PHP being used by your package. This option is also defined in your package's `docker-compose.yml` file:
