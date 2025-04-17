@@ -39,7 +39,7 @@ jobs:
           coverage: none
 
       - name: Create a new PHP package
-        run: composer create-project spatie/package-skeleton-laravel package --remove-vcs --no-interaction --prefer-dist
+        run: composer create-project reedware/laravel-relation-joins package --remove-vcs --no-interaction --prefer-dist
 
       - name: Link Sail Repository
         run: |
