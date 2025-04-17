@@ -47,7 +47,7 @@ jobs:
 
       - name: Install Sail into Package
         run: |
-            vendor/bin/sail install
+            vendor/bin/sail install ${{ matrix.php }}
             vendor/bin/sail publish
         working-directory: package
 

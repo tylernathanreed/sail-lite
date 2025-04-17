@@ -192,7 +192,7 @@ elif [ "$1" == "install" ]; then
 elif [ "$1" == "publish" ]; then
     # Determine directories
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    STUB_RUNTIME_DIR="$SCRIPT_DIR/../stubs/runtimes"
+    STUB_RUNTIME_DIR="$SCRIPT_DIR/../runtimes"
     DEST_RUNTIME_DIR="./docker"
 
     # Ensure docker-compose.yml exists
