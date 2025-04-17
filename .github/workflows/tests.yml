@@ -49,7 +49,7 @@ jobs:
         working-directory: package
 
       - name: Install Sail into Package
-        run: sail:publish --no-interaction
+        run: vendor/bin/sail publish --no-interaction
         working-directory: package
 
       - name: Remove Sail
