@@ -1,0 +1,65 @@
+name: Docker Compose Test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - php: '8.1'
+          - php: '8.2'
+          - php: '8.3'
+          - php: '8.4'
+
+    name: PHP ${{ matrix.php }}
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          path: 'sail'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, fileinfo
+          ini-values: error_reporting=E_ALL
+          tools: composer:v2
+          coverage: none
+
+      - name: Create a new PHP package
+        run: composer create-project spatie/package-skeleton-laravel package --remove-vcs --no-interaction --prefer-dist
+
+      - name: Link Sail Repository
+        run: |
+          composer config minimum-stability dev
+          composer config repositories.sail path ../sail
+          composer require reedware/sail-lite:* --dev -W
+        working-directory: package
+
+      - name: Install Sail into Package
+        run: php artisan sail:publish --no-interaction
+        working-directory: package
+
+      - name: Remove Sail
+        run: composer remove reedware/sail-lite --dev --no-interaction -W
+        working-directory: package
+
+      - name: Start Sail Container
+        run: ../sail/bin/sail up -d --wait
+        working-directory: package
+
+      - name: Stop Sail Container
+        run: ../sail/bin/sail down
+        working-directory: package
