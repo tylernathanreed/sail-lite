@@ -13,9 +13,6 @@
             "email": "tylernathanreed@gmail.com"
         }
     ],
-    "require": {
-        "php": "^8.1"
-    },
     "bin": [
         "bin/sail"
     ]
