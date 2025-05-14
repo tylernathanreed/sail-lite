@@ -84,7 +84,7 @@ Finally, you may start Sail Lite.
 If you don't want to install PHP or Composer locally, you can install the `sail` binary and install your Composer dependencies from inside the new container:
 
 ```bash
-mkdir -p vendor/bin/sail
+mkdir -p vendor/bin
 wget -O vendor/bin/sail https://raw.githubusercontent.com/tylernathanreed/sail-lite/refs/heads/master/bin/sail
 ./vendor/bin/sail build
 ./vendor/bin/sail up -d
