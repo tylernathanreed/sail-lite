@@ -86,6 +86,7 @@ If you don't want to install PHP or Composer locally, you can install the `sail`
 ```bash
 mkdir -p vendor/bin
 wget -O vendor/bin/sail https://raw.githubusercontent.com/tylernathanreed/sail-lite/refs/heads/master/bin/sail
+chmod +x vendor/bin/sail
 ./vendor/bin/sail build
 ./vendor/bin/sail up -d
 ./vendor/bin/sail bash
