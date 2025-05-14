@@ -10,7 +10,8 @@
 - [Sail Lite vs Docker Compose](#sail-lite-vs-docker-compose)
 - [Sail Lite vs Laravel Sail](#sail-lite-vs-laravel-sail)
 - [Installation and Setup](#installation-and-setup)
-  - [Installing into Existing PHP Packages](#installing-into-existing-php-packages)
+  - [Installing into Existing PHP Environments](#installing-into-existing-php-environments)
+  - [Installing into New PHP Environments](#installing-into-new-php-environments)
   - [Configuring a Shell Alias](#configuring-a-shell-alias)
   - [Rebuilding Images](#rebuilding-images)
 - [Starting and Stopping](#starting-and-stopping)
@@ -60,8 +61,8 @@ Laravel Sail also requires several Illuminate and Symfony libraries, whereas Sai
 ## Installation and Setup
 <a name="installation-and-setup"></a>
 
-### Installing into Existing PHP Packages
-<a name="installing-into-existing-php-packages"></a>
+### Installing into Existing PHP Environments
+<a name="installing-into-existing-php-environments"></a>
 
 If you are interested in using Sail Lite with an existing PHP package, you may simply install Sail Lite using the Composer package manager. Of course, these steps assume that your existing local development environment allows you to install Composer dependencies:
 
@@ -77,6 +78,22 @@ After Sail Lite has been installed, you may run the install command. This comman
 
 Finally, you may start Sail Lite.
 
+### Installing into New PHP Environments
+<a name="installing-into-new-php-environments"></a>
+
+If you don't want to install PHP or Composer locally, you can install the `sail` binary and install your Composer dependencies from inside the new container:
+
+```bash
+mkdir -p vendor/bin/sail
+wget -O vendor/bin/sail https://raw.githubusercontent.com/tylernathanreed/sail-lite/refs/heads/master/bin/sail
+./vendor/bin/sail build
+./vendor/bin/sail up -d
+./vendor/bin/sail bash
+> composer require reedware/sail-lite --dev
+> exit
+./vendor/bin/sail install
+```
+
 ### Configuring a Shell Alias
 <a name="configuring-a-shell-alias"></a>
 
@@ -89,7 +106,7 @@ By default, Sail Lite commands are invoked using the `vendor/bin/sail` script:
 However, instead of repeatedly typing `vendor/bin/sail` to execute Sail Lite commands, you may wish to configure a shell alias that allows you to execute Sail's commands more easily:
 
 ```bash
-alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
+alias sail='$([ -f sail ] && echo sail || echo vendor/bin/sail)'
 ```
 
 To make sure this is always available, you may add this to your shell configuration file in your home directory, such as `~/.zshrc` or `~/.bashrc`, and then restart your shell.
