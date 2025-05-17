@@ -1,11 +1,11 @@
 services:
     dev:
+        image: sail-{{PHP_VERSION}}/dev
         build:
             context: ./vendor/reedware/sail-lite/runtimes/{{PHP_VERSION}}
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
-        image: sail-{{PHP_VERSION}}/dev
         environment:
             WWWUSER: '${WWWUSER}'
         volumes:
