@@ -25,9 +25,9 @@ RUN curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xb8dc7e5394
     && echo "deb [signed-by=/etc/apt/keyrings/ppa_ondrej_php.gpg] https://ppa.launchpadcontent.net/ondrej/php/ubuntu noble main" > /etc/apt/sources.list.d/ppa_ondrej_php.list \
     && apt-get update
 
-RUN apt-get install -y php{$PHP}-cli php{$PHP}-dev \
-    php{$PHP}-mbstring php{$PHP}-curl php{$PHP}-xml php{$PHP}-readline \
-    php{$PHP}-xdebug
+RUN apt-get install -y php${PHP}-cli php${PHP}-dev \
+    php${PHP}-mbstring php${PHP}-curl php${PHP}-xml php${PHP}-readline \
+    php${PHP}-xdebug
 
 RUN curl -sLS https://getcomposer.org/installer | php -- --install-dir=/usr/bin/ --filename=composer
 
@@ -36,7 +36,7 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN setcap "cap_net_bind_service=+ep" /usr/bin/php{$PHP}
+RUN setcap "cap_net_bind_service=+ep" /usr/bin/php${PHP}
 
 RUN userdel -r ubuntu
 RUN groupadd --force -g $WWWGROUP sail
@@ -44,7 +44,7 @@ RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
 
 COPY start-container /usr/local/bin/start-container
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY php.ini /etc/php/{$PHP}/cli/conf.d/99-sail.ini
+COPY php.ini /etc/php/${PHP}/cli/conf.d/99-sail.ini
 RUN chmod +x /usr/local/bin/start-container
 
 EXPOSE 80/tcp
