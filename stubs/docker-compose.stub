@@ -1,10 +1,11 @@
 services:
     dev:
-        image: sail-{{PHP_VERSION}}/dev
+        image: sail-lite/basic
         build:
-            context: ./vendor/reedware/sail-lite/runtimes/{{PHP_VERSION}}
+            context: ./vendor/reedware/sail-lite/runtimes/basic
             dockerfile: Dockerfile
             args:
+                PHP: '${PHP_VERSION:-8.5}'
                 WWWGROUP: '${WWWGROUP}'
         environment:
             WWWUSER: '${WWWUSER}'

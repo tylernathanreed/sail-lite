@@ -1,6 +1,6 @@
 # Sail Lite
 
-[![PHP](https://img.shields.io/badge/PHP-8.1+-blue)](https://www.php.net/)
+[![PHP](https://img.shields.io/badge/PHP-7.2--8.5-blue)](https://www.php.net/)
 [![Latest Stable Version](https://img.shields.io/packagist/v/reedware/sail-lite)](https://packagist.org/packages/reedware/sail-lite)
 [![License](https://img.shields.io/packagist/l/reedware/sail-lite)](https://packagist.org/packages/reedware/sail-lite)
 
@@ -169,33 +169,25 @@ sail root-shell
 ## PHP Versions
 <a name="php-versions"></a>
 
-Sail Lite follows the [Supported PHP Versions](https://www.php.net/supported-versions.php), including versions only receiving Security Support. When a new version of PHP is released, a new major release of Sail Lite will be published, and any PHP versions that have reached End of Life will no longer be supported. If you need to use older versions of PHP, then you will need to use older versions of Sail Lite.
+By default, Sail Lite uses the latest version of PHP. However, this can be changed in your `docker-compose.yml` file:
 
-| Sail Lite | PHP Versions |
-| --------- | ------------ |
-| 1.x       | 8.1 - 8.4    |
-
-To change the PHP version that is used to serve your application, you should update the `build` definition of the `dev` container in your package's `docker-compose.yml` file:
-
-```bash
-# PHP 8.4
-context: ./vendor/reedware/sail-lite/runtimes/8.4
-
-# PHP 8.3
-context: ./vendor/reedware/sail-lite/runtimes/8.3
-
-# PHP 8.2
-context: ./vendor/reedware/sail-lite/runtimes/8.2
-
-# PHP 8.1
-context: ./vendor/reedware/sail-lite/runtimes/8.1
+```yml
+services:
+    dev:
+        image: sail-lite/basic
+        build:
+            context: ./vendor/reedware/sail-lite/runtimes/basic
+            dockerfile: Dockerfile
+            args:
+                PHP: '${PHP_VERSION:-8.5}' # <-- PHP Version
+                WWWGROUP: '${WWWGROUP}'
+        environment:
+            WWWUSER: '${WWWUSER}'
+        volumes:
+            - '.:/var/www/html'
 ```
 
-In addition, you may wish to update your `image` name to reflect the version of PHP being used by your package. This option is also defined in your package's `docker-compose.yml` file:
-
-```bash
-image: sail-8.4/dev
-```
+You can either override the `PHP` arg directly, its default value, or specify a `PHP_VERSION` setting in your `.env` file.
 
 After updating your package's `docker-compose.yml` file, you should rebuild your container image
 
